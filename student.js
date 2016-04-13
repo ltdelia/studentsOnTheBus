@@ -16,5 +16,4 @@ var Student = function(name, gender, grade, GPA, detentions, sleepingInClass, ca
 	}
 }
 
-
 module.exports = Student;

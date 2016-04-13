@@ -1,3 +1,4 @@
+var Student = require('./student.js');
 var Bus = require('./bus.js');
 var prompt = require('prompt');
 var fs = require('fs');
@@ -5,9 +6,11 @@ var fs = require('fs');
 // make the bus object with the constructor function
 var School = new Bus();
 
+// add 20 students to it
+
 prompt.start();
 
-// schema variable for validation -- solves prompt skipping over things
+// schema variable for validation -- all the student information we will prompt the user for
 var schema = {
 	properties:{
 		name:{
@@ -53,13 +56,20 @@ prompt.get(schema, function(err, result){
 	console.log("Sleeping in Class: " + result.sleepingInClass);
 	console.log("Catch Phrase: " + result.catchPhrase);
 
+	// creating a new student object with the student's information
+	var inputStudent = new Student(result.name, result.gender, result.grade, result.GPA, result.detentions, result.sleepingInClass, result.catchPhrase);
+
+	// invoking the canStudentHaveFun function
+	inputStudent.canStudentHaveFun();
+
 	// invoking the studentEntersBus function
 	School.studentEntersBus(result.name, result.gender, result.grade, result.GPA, result.detentions, result.sleepingInClass, result.catchPhrase);
 
-	//display all of the busChatter
-
-	//create property inside of the bus function to remove a particular student by name
-
+	// //call the busChatter property of the bus object
+	for(var i=0; i<School.studentsOnTheBus.length; i++){
+		School.studentsOnTheBus[i] = new Student(result.name, result.gender, result.grade, result.GPA, result.detentions, result.sleepingInClass, result.catchPhrase);
+		School.busChatter();
+	}
 
 	// // append the text
 	fs.appendFile('students.txt', JSON.stringify(School.studentsOnTheBus), function(err, data){
@@ -71,15 +81,16 @@ prompt.get(schema, function(err, result){
 	})
 
 	// // read the text, log the output to the console
-	// Add Item
 	fs.readFile("students.txt", "utf-8", function(err, readResult){
 		if(err)
 			throw err;
 		else{		
 				var studentsOnTheBus = readResult.split('\r\n');
-				for(var i=0; i<studentsOnTheBus.length; i++){
-					var studentsJSON = JSON.parse(studentsOnTheBus[i].replace(/[\[\]']+/g, ''));
-					console.log(studentsJSON);
+				for(var i=0; i< studentsOnTheBus.length-1; i++){
+					var studentsJSON = JSON.parse(studentsOnTheBus[i].replace(/[\[\]']+/g,''));
+					if(result.name == studentsJSON.name){
+						console.log(studentsJSON.catchPhrase);
+					}
 				}
 		}
 	})
